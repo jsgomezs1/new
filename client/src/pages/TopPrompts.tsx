@@ -1,14 +1,18 @@
 import { useTenant } from '@/contexts/TenantContext';
-import { MOCK_PROMPTS } from '@/lib/mockData';
 import { PromptsTable } from '@/components/PromptsTable';
+import { useQuery } from 'convex/react';
+import { api } from '@convex/_generated/api';
 
 export default function TopPrompts() {
-  const { tenant, isLoading } = useTenant();
+  const { tenant, isLoading: tenantLoading } = useTenant();
 
-  // todo: remove mock functionality - replace with Convex query getTopPrompts
-  const tenantPrompts = tenant 
-    ? MOCK_PROMPTS.filter(p => p.tenantId === tenant.id)
-    : [];
+  const prompts = useQuery(
+    api.prompts.getByTenant,
+    tenant ? { tenantId: tenant.id } : "skip"
+  );
+
+  const isLoading = tenantLoading || prompts === undefined;
+  const tenantPrompts = prompts ?? [];
 
   return (
     <div className="p-8 space-y-6">
