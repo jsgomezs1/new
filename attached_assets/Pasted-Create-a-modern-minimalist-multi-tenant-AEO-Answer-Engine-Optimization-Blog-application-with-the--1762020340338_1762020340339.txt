@@ -1,0 +1,138 @@
+Create a modern, minimalist multi-tenant AEO (Answer Engine Optimization) Blog application with the following specifications:
+
+TECH STACK:
+- React with TypeScript
+- Tailwind CSS for styling
+- React Router for navigation
+- Convex for backend (database, queries, mutations)
+- shadcn/ui components (optional but recommended for clean UI)
+
+CONVEX BACKEND SETUP:
+
+1. SCHEMA (convex/schema.ts):
+   - tenants table:
+     * name: string
+     * slug: string (unique identifier)
+     * logoUrl: string
+     * primaryColor: string
+     * createdAt: number
+   
+   - userPrompts table:
+     * tenantId: Id<"tenants">
+     * promptText: string
+     * category: string
+     * frequency: number
+     * lastUsed: number
+     * relevanceScore: number (1-10)
+     * createdAt: number
+
+2. CONVEX QUERIES (convex/queries.ts):
+   - getTenantBySlug(slug: string)
+   - getTopPrompts(tenantId: Id, limit?: number, sortBy?: string)
+   - searchPrompts(tenantId: Id, searchTerm: string)
+
+3. CONVEX MUTATIONS (convex/mutations.ts):
+   - createTenant(tenant data)
+   - recordPrompt(tenantId, prompt data)
+   - updatePromptFrequency(promptId)
+   - seedSampleData() - Initialize 2-3 tenants with sample prompts
+
+FRONTEND FEATURES:
+
+1. HEADER:
+   - Display tenant-specific logo fetched from Convex
+   - Show tenant company name from database
+   - Clean, professional design with subtle shadow/border
+   - Responsive layout
+
+2. SIDEBAR NAVIGATION:
+   - Fixed left sidebar with smooth animations
+   - Menu items:
+     * Dashboard (home icon)
+     * Top User Prompts (chart/analytics icon)
+     * Blog Posts (document icon)
+     * Settings (gear icon)
+   - Active state highlighting
+   - Collapsible on mobile
+
+3. TOP USER PROMPTS PAGE (Main Feature):
+   - Real-time data table using Convex useQuery hook
+   - Display columns:
+     * Prompt text (truncated with "..." if too long)
+     * Frequency/Count
+     * Category/Topic
+     * Last used date
+     * Relevance score (1-10 with visual indicator)
+   - Features:
+     * Real-time updates when data changes
+     * Search/filter functionality
+     * Sort by columns (frequency, date, relevance)
+     * Pagination (10 items per page)
+     * Export to CSV button
+   - Loading states with skeleton UI
+   - Error handling with friendly messages
+
+4. MULTI-TENANT SETUP:
+   - Use URL parameter (e.g., ?tenant=acme-analytics)
+   - Fetch tenant config from Convex based on slug
+   - Dynamic theme based on tenant primaryColor
+   - Tenant context provider wrapping the app
+
+5. DESIGN REQUIREMENTS:
+   - Very clean, minimalist aesthetic
+   - Ample white space
+   - Subtle shadows and borders
+   - Professional color palette (blues/grays as default)
+   - Smooth transitions and hover effects
+   - Mobile responsive (breakpoints: sm, md, lg, xl)
+   - Accessible (proper ARIA labels, keyboard navigation)
+   - Loading skeletons for async data
+
+6. SAMPLE DATA TO SEED:
+   Tenant 1: "Acme Analytics" (slug: acme-analytics)
+   - Sample prompts: "How to create custom dashboards?", "Export data to CSV", "Set up user permissions", etc.
+   
+   Tenant 2: "CloudDocs" (slug: clouddocs)
+   - Sample prompts: "How to share documents?", "Version control best practices", "Collaboration features", etc.
+   
+   Tenant 3: "TaskFlow" (slug: taskflow)
+   - Sample prompts: "Create project templates", "Assign tasks to team", "Track project progress", etc.
+   
+   Each tenant should have 15-20 sample prompts with varied frequencies (1-50) and relevance scores.
+
+7. CONVEX DEPLOYMENT:
+   - Include instructions for `npx convex dev` setup
+   - Environment variables configuration
+   - Seed script to populate initial data
+
+PROJECT STRUCTURE:
+```
+/convex
+  schema.ts
+  queries.ts
+  mutations.ts
+  seed.ts
+/src
+  /components
+    Header.tsx
+    Sidebar.tsx
+    PromptsTable.tsx
+  /contexts
+    TenantContext.tsx
+  /pages
+    Dashboard.tsx
+    TopPrompts.tsx
+  /lib
+    utils.ts
+  App.tsx
+  main.tsx
+```
+
+IMPLEMENTATION NOTES:
+- Use Convex's reactive queries for real-time updates
+- Implement optimistic updates for better UX
+- Add proper error boundaries
+- Include TypeScript types for all Convex queries/mutations
+- Make it production-ready with clean code and proper component structure
+
+The app should work immediately after running `npm install` and `npx convex dev`, with sample data automatically seeded.
